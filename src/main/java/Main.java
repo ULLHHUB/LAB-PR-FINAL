@@ -24,6 +24,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+/**
+ * Main application class for the Maze Solver.
+ * Provides a graphical user interface for creating mazes, loading/saving mazes,
+ * and visualizing various pathfinding algorithms.
+ */
 public class Main extends Canvas implements Runnable, MouseListener {
 
 	private static Node start = null;
@@ -41,6 +46,12 @@ public class Main extends Canvas implements Runnable, MouseListener {
 	private final static int NODES_WIDTH = 28;
 	private final static int NODES_HEIGHT = 19;
 
+	/**
+	 * Main entry point for the application.
+	 * Initializes the GUI window, menu, and maze grid.
+	 * 
+	 * @param args Command line arguments (not used)
+	 */
 	public static void main(String[] args) {
 		frame = new JFrame("Maze Solver");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -61,6 +72,12 @@ public class Main extends Canvas implements Runnable, MouseListener {
 
 	}
 
+	/**
+	 * Sets up the menu bar with File, Board, and Algorithms menus.
+	 * Configures all menu items and their action listeners.
+	 * 
+	 * @param frame The main application frame
+	 */
 	public static void SetupMenu(JFrame frame) {
 		JMenuBar bar = new JMenuBar();
 		bar.setBounds(0, 0, WIDTH, 25);
@@ -221,6 +238,10 @@ public class Main extends Canvas implements Runnable, MouseListener {
 
 	}
 
+	/**
+	 * Main render loop for the application.
+	 * Continuously updates the display using double buffering.
+	 */
 	public void run() {
 		init();
 		while (true) {
@@ -244,6 +265,10 @@ public class Main extends Canvas implements Runnable, MouseListener {
 
 	}
 
+	/**
+	 * Initializes the application components.
+	 * Creates the node grid, sets up mouse listeners, and configures maze directions.
+	 */
 	public void init() {
 		// check
 		requestFocus();
@@ -253,6 +278,11 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		setMazeDirections();
 		mazeGenerator = new MazeGenerator(NODES_WIDTH, NODES_HEIGHT, nodeList);
 	}
+	
+	/**
+	 * Sets up the directional connections between adjacent nodes.
+	 * Establishes left, right, up, and down neighbors for each node in the grid.
+	 */
 	public void setMazeDirections() {
 		for (int i = 0; i < nodeList.length; i++) {
 			for (int j = 0; j < nodeList[i].length; j++) {
@@ -271,6 +301,12 @@ public class Main extends Canvas implements Runnable, MouseListener {
 			}	
 		}
 	}
+	
+	/**
+	 * Creates or resets the node grid.
+	 * 
+	 * @param ref If true, only clears existing nodes; if false, creates new nodes
+	 */
 	public void createNodes(boolean ref) {
 		for (int i = 0; i < nodeList.length; i++) {
 			for (int j = 0; j < nodeList[i].length; j++) {
@@ -283,6 +319,16 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		}
 	}
 
+	/**
+	 * Saves the current maze configuration to a file.
+	 * The maze is saved in a custom format with:
+	 * - 0: Empty path
+	 * - 1: Wall
+	 * - 2: Start point
+	 * - 3: End point
+	 * 
+	 * @throws IOException If an I/O error occurs during file writing
+	 */
 	public void saveMaze() throws IOException {
 		JFileChooser fileChooser = new JFileChooser();
 		int option = fileChooser.showSaveDialog(frame);
@@ -310,6 +356,12 @@ public class Main extends Canvas implements Runnable, MouseListener {
 
 	}
 
+	/**
+	 * Loads a maze configuration from a file.
+	 * Reads the custom maze format and reconstructs the node grid.
+	 * 
+	 * @throws IOException If an I/O error occurs during file reading
+	 */
 	public void openMaze() throws IOException {
 		JFileChooser fileChooser = new JFileChooser();
 		int option = fileChooser.showOpenDialog(frame);
@@ -349,6 +401,10 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		}
 	}
 
+	/**
+	 * Clears all search results from the maze.
+	 * Removes search visualization while preserving walls, start, and end points.
+	 */
 	public void clearSearchResults() {
 		for (int i = 0; i < nodeList.length; i++) {
 			for (int j = 0; j < nodeList[i].length; j++) {
@@ -363,6 +419,10 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		}
 	}
 
+	/**
+	 * Resets the g-cost values for all nodes to maximum.
+	 * Prepares the grid for a new pathfinding algorithm run.
+	 */
 	public void resetCosts() {
 		for (int i = 0; i < nodeList.length; i++) {
 			for (int j = 0; j < nodeList[i].length; j++) {
@@ -371,6 +431,11 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		}
 	}
 
+	/**
+	 * Renders all nodes on the graphics context.
+	 * 
+	 * @param g The Graphics2D context to render on
+	 */
 	public void render(Graphics2D g) {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
@@ -381,11 +446,20 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		}
 	}
 
+	/**
+	 * Starts the rendering thread.
+	 */
 	public void start() {
 		// check
 		new Thread(this).start();
 	}
 
+	/**
+	 * Handles mouse press events on the canvas.
+	 * Allows users to create walls, set start/end points by clicking nodes.
+	 * 
+	 * @param e The mouse event
+	 */
 	public void mousePressed(MouseEvent e) {
 		Node clickedNode = getNodeAt(e.getX(), e.getY());
 		if (clickedNode == null)
@@ -413,10 +487,20 @@ public class Main extends Canvas implements Runnable, MouseListener {
 
 	}
 
+	/**
+	 * Validates that the maze has both a start and end point.
+	 * 
+	 * @return true if the maze has start and target nodes, false otherwise
+	 */
 	public boolean isMazeValid() {
 		return target != null && start != null;
 	}
 
+	/**
+	 * Finds and returns the start node in the grid.
+	 * 
+	 * @return The start node, or null if not found
+	 */
 	private Node getStart() {
 		for (int i = 0; i < nodeList.length; i++) {
 			for (int j = 0; j < nodeList[i].length; j++) {
@@ -428,6 +512,13 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		return null;
 	}
 
+	/**
+	 * Gets the node at the specified pixel coordinates.
+	 * 
+	 * @param x The x-coordinate in pixels
+	 * @param y The y-coordinate in pixels
+	 * @return The node at the coordinates, or null if out of bounds
+	 */
 	public Node getNodeAt(int x, int y) {
 		x -= 15;
 		x /= 35;
@@ -441,18 +532,38 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		return null;
 	}
 
+	/**
+	 * Mouse clicked event handler (not used).
+	 * 
+	 * @param arg0 The mouse event
+	 */
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 	}
 
+	/**
+	 * Mouse entered event handler (not used).
+	 * 
+	 * @param arg0 The mouse event
+	 */
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
 	}
 
+	/**
+	 * Mouse exited event handler (not used).
+	 * 
+	 * @param arg0 The mouse event
+	 */
 	@Override
 	public void mouseExited(MouseEvent arg0) {
 	}
 
+	/**
+	 * Mouse released event handler (not used).
+	 * 
+	 * @param arg0 The mouse event
+	 */
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 	}

@@ -8,18 +8,42 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
 
-
+/**
+ * Implements various pathfinding algorithms for maze solving.
+ * Supports DFS, BFS, A*, Dijkstra, Greedy Best-First Search, and Bidirectional Search.
+ */
 public class Algorithm {
 	
 	private int searchtime = 100;
 	
+	/**
+	 * Gets the current search time delay in milliseconds.
+	 * 
+	 * @return The search time in milliseconds
+	 */
 	public int getSearchTime() {
 		return searchtime;
 	}
+	
+	/**
+	 * Sets the search time delay for visualization.
+	 * Controls the speed of the search animation.
+	 * 
+	 * @param searchtime The search time in milliseconds
+	 */
 	public void setSearchTime(int searchtime) {
 		this.searchtime = searchtime;
 	}
 
+	/**
+	 * Performs a Depth-First Search (DFS) to find a path from start to end.
+	 * Uses a stack to explore as far as possible along each branch before backtracking.
+	 * 
+	 * @param start The starting node
+	 * @param end The target/end node
+	 * @param graphWidth The width of the grid
+	 * @param graphHeight The height of the grid
+	 */
 	public void dfs(Node start, Node end, int graphWidth, int graphHeight) {
 		Stack<Node> nodes = new Stack<>();
 		Node[][] prev = new Node[graphWidth][graphHeight];
@@ -52,6 +76,15 @@ public class Algorithm {
 		}
 	}
 
+	/**
+	 * Performs a Breadth-First Search (BFS) to find the shortest path from start to end.
+	 * Uses a queue to explore all neighbors at the current depth before moving to the next level.
+	 * 
+	 * @param start The starting node
+	 * @param end The target/end node
+	 * @param graphWidth The width of the grid
+	 * @param graphHeight The height of the grid
+	 */
 	public void bfs(Node start, Node end, int graphWidth, int graphHeight) {
 		Queue<Node> queue = new LinkedList<>();
 		Node[][] prev = new Node[graphWidth][graphHeight];
@@ -85,6 +118,15 @@ public class Algorithm {
 		shortpath(prev, end);
 	}
 	
+	/**
+	 * Selects the node with the lowest heuristic cost from a list.
+	 * Calculates both the heuristic distance to the end and distance from the start.
+	 * 
+	 * @param nodes The list of nodes to evaluate
+	 * @param end The target/end node
+	 * @param start The starting node
+	 * @return The node with the lowest total heuristic cost
+	 */
 	private Node getLeastHeuristic(List<Node> nodes,Node end,Node start) {
 		if(!nodes.isEmpty()) {
 			Node leastH = nodes.get(0);
@@ -103,6 +145,13 @@ public class Algorithm {
 		return null;
 	}
 
+	/**
+	 * Reconstructs and displays the shortest path from start to end.
+	 * Backtracks from the end node using the previous node array.
+	 * 
+	 * @param prev 2D array storing the previous node for each position
+	 * @param end The target/end node
+	 */
 	private void shortpath(Node[][] prev, Node end) {
 		Node pathConstructor = end;
 		while(pathConstructor != null) {
@@ -119,6 +168,15 @@ public class Algorithm {
 		}
 	}
 
+	/**
+	 * Performs an A* search to find the optimal path from start to end.
+	 * Combines actual distance from start (g-cost) with estimated distance to end (h-cost).
+	 * 
+	 * @param start The starting node
+	 * @param targetNode The target/end node
+	 * @param graphWidth The width of the grid
+	 * @param graphHeight The height of the grid
+	 */
 	public void Astar(Node start, Node targetNode,  int graphWidth, int graphHeight) {
 		List<Node> openList = new ArrayList<Node>();
 		Node[][] prev = new Node[graphWidth][graphHeight];
@@ -163,6 +221,15 @@ public class Algorithm {
 		
 	}
 
+	/**
+	 * Performs Dijkstra's algorithm to find the shortest path from start to end.
+	 * Guarantees the shortest path by exploring nodes in order of their distance from start.
+	 * 
+	 * @param start The starting node
+	 * @param end The target/end node
+	 * @param graphWidth The width of the grid
+	 * @param graphHeight The height of the grid
+	 */
 	public void dijkstra(Node start, Node end, int graphWidth, int graphHeight) {
 		List<Node> openList = new ArrayList<>();
 		Node[][] prev = new Node[graphWidth][graphHeight];
@@ -213,6 +280,16 @@ public class Algorithm {
 		}
 	}
 
+	/**
+	 * Performs a Greedy Best-First Search to find a path from start to end.
+	 * Prioritizes nodes that appear to be closer to the goal based on heuristic.
+	 * May not find the optimal path but is fast.
+	 * 
+	 * @param start The starting node
+	 * @param end The target/end node
+	 * @param graphWidth The width of the grid
+	 * @param graphHeight The height of the grid
+	 */
 	public void greedyBestFirstSearch(Node start, Node end, int graphWidth, int graphHeight) {
 		List<Node> openList = new ArrayList<>();
 		Node[][] prev = new Node[graphWidth][graphHeight];
@@ -245,6 +322,16 @@ public class Algorithm {
 		}
 	}
 
+	/**
+	 * Performs a Bidirectional Search to find a path from start to end.
+	 * Searches from both start and end simultaneously until the searches meet.
+	 * More efficient than unidirectional search for finding paths.
+	 * 
+	 * @param start The starting node
+	 * @param end The target/end node
+	 * @param graphWidth The width of the grid
+	 * @param graphHeight The height of the grid
+	 */
 	public void bidirectionalSearch(Node start, Node end, int graphWidth, int graphHeight) {
 		Queue<Node> queueStart = new LinkedList<>();
 		Queue<Node> queueEnd = new LinkedList<>();

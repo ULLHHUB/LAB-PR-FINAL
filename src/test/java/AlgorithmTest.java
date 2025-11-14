@@ -3,6 +3,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test class for Algorithm pathfinding methods.
+ * Tests the various search algorithms including Dijkstra, Greedy Best-First Search,
+ * and Bidirectional Search.
+ */
 class AlgorithmTest {
 
     private Node start, end;
@@ -11,6 +16,10 @@ class AlgorithmTest {
     private final int HEIGHT = 10;
     private Algorithm algorithm;
 
+    /**
+     * Sets up the test environment before each test.
+     * Creates a grid of nodes and initializes start and end points.
+     */
     @BeforeEach
     void setUp() {
         algorithm = new Algorithm();
@@ -26,6 +35,10 @@ class AlgorithmTest {
         end.setColor(java.awt.Color.RED);
     }
 
+    /**
+     * Tests Dijkstra's algorithm for finding the shortest path.
+     * Verifies that the algorithm executes without errors.
+     */
     @Test
     void testDijkstra() {
         // Assuming a simple path exists
@@ -35,12 +48,20 @@ class AlgorithmTest {
         assertTrue(true); // Placeholder
     }
 
+    /**
+     * Tests Greedy Best-First Search algorithm.
+     * Verifies that the algorithm executes without errors.
+     */
     @Test
     void testGreedyBestFirstSearch() {
         algorithm.greedyBestFirstSearch(start, end, WIDTH, HEIGHT);
         assertTrue(true); // Placeholder
     }
 
+    /**
+     * Tests Bidirectional Search algorithm.
+     * Verifies that the algorithm executes without errors.
+     */
     @Test
     void testBidirectionalSearch() {
         algorithm.bidirectionalSearch(start, end, WIDTH, HEIGHT);
