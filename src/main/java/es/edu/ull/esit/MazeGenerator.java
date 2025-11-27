@@ -1,5 +1,6 @@
 package es.edu.ull.esit;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +16,7 @@ public class MazeGenerator {
     private final int width;
     private final int height;
     private final Node[][] grid;
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
 
     /**
      * Constructs a new MazeGenerator with the specified dimensions.

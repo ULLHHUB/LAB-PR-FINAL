@@ -1,0 +1,9 @@
+<map id="es.edu.ull.esit.Main" name="es.edu.ull.esit.Main">
+<area shape="rect" id="Node000001" title=" " alt="" coords="67,80,202,107"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,72,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="69,39,120,77,116,82,65,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="96,5,173,32"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="137,48,137,80,132,80,132,48"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="197,5,304,32"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="219,43,156,82,153,77,216,38"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="es.edu.ull.esit.algorithm.BfsAlgorithm" name="es.edu.ull.esit.algorithm.BfsAlgorithm">
+<area shape="rect" id="Node000001" title=" " alt="" coords="7,187,170,229"/>
+<area shape="rect" id="Node000002" href="$classes_1_1edu_1_1ull_1_1esit_1_1algorithm_1_1_abstract_search_algorithm.html" title=" " alt="" coords="5,96,172,139"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="91,154,91,186,86,186,86,154"/>
+<area shape="rect" id="Node000003" href="$interfacees_1_1edu_1_1ull_1_1esit_1_1algorithm_1_1_search_algorithm.html" title=" " alt="" coords="7,5,170,48"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="91,64,91,96,86,96,86,64"/>
+</map>
