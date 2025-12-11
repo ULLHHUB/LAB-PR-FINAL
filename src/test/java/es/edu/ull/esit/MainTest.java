@@ -290,7 +290,7 @@ class MainTest {
     }
 
     @Test
-    void testSetupMenu() {
+    void testMenuActions() throws NoSuchFieldException, IllegalAccessException {
         // Use JPanel as a container to avoid HeadlessException
         JPanel panel = new JPanel();
         Main.SetupMenu(panel);
@@ -324,28 +324,146 @@ class MainTest {
         JMenu algoMenu = menuBar.getMenu(2);
         assertEquals(7, algoMenu.getItemCount()); // BFS, DFS, A*, Dijkstra, Greedy, Bidirectional, SearchTime
         
-        // Trigger actions to ensure no exceptions (logic is mostly in Main, but listeners are anonymous)
-        // We can't easily check the side effects without mocking, but we can ensure they run.
-        // For example, "New Board" calls createNodes(false).
+        // --- Test Board Menu Actions ---
         
-        // New Board
-        JMenuItem newBoardItem = boardMenu.getItem(0);
-        ActionListener[] listeners = newBoardItem.getActionListeners();
-        assertTrue(listeners.length > 0);
-        listeners[0].actionPerformed(new ActionEvent(newBoardItem, ActionEvent.ACTION_PERFORMED, "New Board"));
+        // "New Board"
+        JMenuItem newGridItem = boardMenu.getItem(0);
+        newGridItem.doClick(); 
+        // Verify nodes are reset (we can't easily check "reset" but we know it runs without error)
         
-        // Generate Maze
-        JMenuItem genMazeItem = boardMenu.getItem(1);
-        listeners = genMazeItem.getActionListeners();
-        assertTrue(listeners.length > 0);
-        // This triggers maze generation which might take time or use random, but should be safe
-        listeners[0].actionPerformed(new ActionEvent(genMazeItem, ActionEvent.ACTION_PERFORMED, "Generate Maze"));
+        // "Generate Maze"
+        JMenuItem generateMazeItem = boardMenu.getItem(1);
+        generateMazeItem.doClick();
         
-        // Clear Search Results
-        JMenuItem clearItem = boardMenu.getItem(2);
-        listeners = clearItem.getActionListeners();
-        assertTrue(listeners.length > 0);
-        listeners[0].actionPerformed(new ActionEvent(clearItem, ActionEvent.ACTION_PERFORMED, "Clear Search Results"));
+        // Verify walls exist
+        Field nodeListField = Main.class.getDeclaredField("nodeList");
+        nodeListField.setAccessible(true);
+        Node[][] nodeList = (Node[][]) nodeListField.get(mainApp);
+        boolean hasWalls = false;
+        for(Node[] row : nodeList) {
+            for(Node n : row) {
+                if(n.isWall()) hasWalls = true;
+            }
+        }
+        assertTrue(hasWalls, "Generate Maze should create walls");
+        
+        // "Clear Search Results"
+        JMenuItem clearSearchItem = boardMenu.getItem(2);
+        // Set a node to searched color
+        nodeList[5][5].setColor(Color.BLUE);
+        clearSearchItem.doClick();
+        assertEquals(Color.LIGHT_GRAY, nodeList[5][5].getColor());
+        
+        // Set search time to 0 to avoid delays
+        Field algorithmField = Main.class.getDeclaredField("algorithm");
+        algorithmField.setAccessible(true);
+        Algorithm algoInstance = (Algorithm) algorithmField.get(null);
+        algoInstance.setSearchTime(0);
+
+        // Define fields for use in lambda
+        Field startField = Main.class.getDeclaredField("start");
+        startField.setAccessible(true);
+        Field targetField = Main.class.getDeclaredField("target");
+        targetField.setAccessible(true);
+
+        // Helper to reset grid and start/target between tests
+        // We use an array to hold start/target nodes so we can update them
+        final Node[] nodes = new Node[2]; // 0: start, 1: target
+        
+        Runnable resetGrid = () -> {
+            mainApp.createNodes(false);
+            mainApp.setMazeDirections(); // Ensure neighbors are set!
+            
+            // Get new nodes from the new grid
+            nodes[0] = mainApp.getNodeAt(15, 15); // 0,0
+            nodes[1] = mainApp.getNodeAt(15 + 5 * 35, 15 + 5 * 35); // 5,5 - Further away to ensure algorithms run fully
+            
+            nodes[0].setColor(Color.GREEN);
+            nodes[1].setColor(Color.RED);
+            
+            try {
+                startField.set(null, nodes[0]);
+                targetField.set(null, nodes[1]);
+            } catch (Exception e) { e.printStackTrace(); }
+        };
+
+        // Test BFS
+        resetGrid.run();
+        JMenuItem bfsItem = null;
+        for(int i=0; i<algoMenu.getItemCount(); i++) {
+            if(algoMenu.getItem(i).getText().equals("Breadth-First Search")) {
+                bfsItem = algoMenu.getItem(i);
+                break;
+            }
+        }
+        assertNotNull(bfsItem);
+        bfsItem.doClick();
+        assertEquals(Color.MAGENTA, nodes[1].getColor(), "BFS should find path");
+        
+        // Test DFS
+        resetGrid.run();
+        JMenuItem dfsItem = null;
+        for(int i=0; i<algoMenu.getItemCount(); i++) {
+            if(algoMenu.getItem(i).getText().equals("Depth-First Search")) {
+                dfsItem = algoMenu.getItem(i);
+                break;
+            }
+        }
+        assertNotNull(dfsItem);
+        dfsItem.doClick();
+        assertEquals(Color.MAGENTA, nodes[1].getColor(), "DFS should find path");
+        
+        // Test A*
+        resetGrid.run();
+        JMenuItem astarItem = null;
+        for(int i=0; i<algoMenu.getItemCount(); i++) {
+            if(algoMenu.getItem(i).getText().equals("A-star Search")) {
+                astarItem = algoMenu.getItem(i);
+                break;
+            }
+        }
+        assertNotNull(astarItem);
+        astarItem.doClick();
+        assertEquals(Color.MAGENTA, nodes[1].getColor(), "A* should find path");
+        
+        // Test Dijkstra
+        resetGrid.run();
+        JMenuItem dijkstraItem = null;
+        for(int i=0; i<algoMenu.getItemCount(); i++) {
+            if(algoMenu.getItem(i).getText().equals("Dijkstra's Algorithm")) {
+                dijkstraItem = algoMenu.getItem(i);
+                break;
+            }
+        }
+        assertNotNull(dijkstraItem);
+        dijkstraItem.doClick();
+        assertEquals(Color.MAGENTA, nodes[1].getColor(), "Dijkstra should find path");
+        
+        // Test Greedy
+        resetGrid.run();
+        JMenuItem greedyItem = null;
+        for(int i=0; i<algoMenu.getItemCount(); i++) {
+            if(algoMenu.getItem(i).getText().equals("Greedy Best-First Search")) {
+                greedyItem = algoMenu.getItem(i);
+                break;
+            }
+        }
+        assertNotNull(greedyItem);
+        greedyItem.doClick();
+        assertEquals(Color.MAGENTA, nodes[1].getColor(), "Greedy should find path");
+        
+        // Test Bidirectional
+        resetGrid.run();
+        JMenuItem biItem = null;
+        for(int i=0; i<algoMenu.getItemCount(); i++) {
+            if(algoMenu.getItem(i).getText().equals("Bidirectional Search")) {
+                biItem = algoMenu.getItem(i);
+                break;
+            }
+        }
+        assertNotNull(biItem);
+        biItem.doClick();
+        assertEquals(Color.MAGENTA, nodes[1].getColor(), "Bidirectional should find path");
     }
 
     @Test
