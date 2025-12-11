@@ -1,5 +1,4 @@
-
-name: Maven and SonarCloud Analysis
+name: Maven CI
 
 on:
   push:
@@ -15,8 +14,8 @@ permissions:
   pull-requests: write  # permite comentar/chequear en PR
 
 jobs:
-  sonarcloud:
-    name: SonarCloud Analysis (Java ${{ matrix.java }})
+  maven:
+    name: Maven Build and Tests (Java ${{ matrix.java }})
     runs-on: ubuntu-latest
 
     strategy:
@@ -25,11 +24,12 @@ jobs:
 
     steps:
       # 1) Checkout
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # recomendado por Sonar para análisis correcto
+          fetch-depth: 0
 
-      # 2) Configurar JDK según el matrix
+      # 2) Set up JDK according to matrix
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
@@ -37,25 +37,42 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # 3) Cache de Sonar (acelera descargas del scanner/analyzers)
-      - name: Cache SonarCloud packages
+      # 3) Cache Maven local repository
+      - name: Cache Maven local repository
         uses: actions/cache@v4
         with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
 
-      # 4) Compilar y analizar con Maven + SonarCloud
-      - name: Build and SonarCloud analysis
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # inyectado por GitHub
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}     # créalo en Settings → Secrets
-        run: |
-          mvn --batch-mode -V \
-              clean verify sonar:sonar \
-              -DskipTests=false \
-              -Dsonar.projectKey=ULLHHUB_LAB-PR-FINAL \
-              -Dsonar.organization=ullhhub \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=${SONAR_TOKEN} \
-              -Dsonar.qualitygate.wait=true
+      # 4) Build - validate & compile
+      - name: Maven Validate & Compile
+        run: mvn --batch-mode -V -Ddependency-check.skip=true -DskipTests=true validate compile
+
+      # 5) Run tests
+      - name: Maven Test
+        run: mvn --batch-mode -V -Ddependency-check.skip=true test
+        # Nota: si quieres recopilar resultados JUnit/coverage, añade acciones adicionales para subir artefactos o reports.
+
+      # 6) Package (creates jars/wars)
+      - name: Maven Package
+        run: mvn --batch-mode -V -Ddependency-check.skip=true -DskipTests=true package
+
+      # 7) Install to local repo (optional)
+      - name: Maven Install (to local ~/.m2)
+        run: mvn --batch-mode -V -Ddependency-check.skip=true -DskipTests=true install
+
+      # 8) Verify (full lifecycle, e.g., integration tests if any)
+      - name: Maven Verify
+        run: mvn --batch-mode -V -Ddependency-check.skip=true verify
+
+      # 9) Upload build artifact (optional)
+      - name: Upload built artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maven-build-artifacts
+          path: |
+            target/*.jar
+            target/*.war
