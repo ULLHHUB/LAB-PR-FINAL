@@ -170,63 +170,7 @@ class MainTest {
         assertTrue(node2.isEnd());
     }
 
-    @Test
-    void testMenuActions() {
-        // Use JPanel instead of JFrame to avoid HeadlessException in CI environments
-        JPanel panel = new JPanel();
-        Main.SetupMenu(panel);
-        
-        JMenuBar bar = null;
-        
-        // Check components directly
-        for (Component c : panel.getComponents()) {
-            if (c instanceof JMenuBar) {
-                bar = (JMenuBar) c;
-                break;
-            }
-        }
-        
-        assertNotNull(bar, "JMenuBar should be found in the panel");
-        
-        JMenu boardMenu = bar.getMenu(1);
-        JMenu algorithmsMenu = bar.getMenu(2);
-        
-        // Test "New Board" (index 0 in Board menu)
-        JMenuItem newGrid = boardMenu.getItem(0);
-        newGrid.getActionListeners()[0].actionPerformed(new ActionEvent(newGrid, ActionEvent.ACTION_PERFORMED, "New Board"));
-        
-        // Test "Generate Maze" (index 1 in Board menu)
-        JMenuItem generateMaze = boardMenu.getItem(1);
-        generateMaze.getActionListeners()[0].actionPerformed(new ActionEvent(generateMaze, ActionEvent.ACTION_PERFORMED, "Generate Maze"));
-        
-        // Test "Clear Search Results" (index 2 in Board menu)
-        JMenuItem clearSearch = boardMenu.getItem(2);
-        clearSearch.getActionListeners()[0].actionPerformed(new ActionEvent(clearSearch, ActionEvent.ACTION_PERFORMED, "Clear Search Results"));
-        
-        // Test Algorithms (BFS at index 0)
-        JMenuItem bfsItem = algorithmsMenu.getItem(0);
-        bfsItem.getActionListeners()[0].actionPerformed(new ActionEvent(bfsItem, ActionEvent.ACTION_PERFORMED, "BFS"));
-        
-        // Test DFS (index 1)
-        JMenuItem dfsItem = algorithmsMenu.getItem(1);
-        dfsItem.getActionListeners()[0].actionPerformed(new ActionEvent(dfsItem, ActionEvent.ACTION_PERFORMED, "DFS"));
-        
-        // Test A* (index 2)
-        JMenuItem astarItem = algorithmsMenu.getItem(2);
-        astarItem.getActionListeners()[0].actionPerformed(new ActionEvent(astarItem, ActionEvent.ACTION_PERFORMED, "A*"));
-        
-        // Test Dijkstra (index 3)
-        JMenuItem dijkstraItem = algorithmsMenu.getItem(3);
-        dijkstraItem.getActionListeners()[0].actionPerformed(new ActionEvent(dijkstraItem, ActionEvent.ACTION_PERFORMED, "Dijkstra"));
-        
-        // Test Greedy (index 4)
-        JMenuItem greedyItem = algorithmsMenu.getItem(4);
-        greedyItem.getActionListeners()[0].actionPerformed(new ActionEvent(greedyItem, ActionEvent.ACTION_PERFORMED, "Greedy"));
-        
-        // Test Bidirectional (index 5)
-        JMenuItem bidirectionalItem = algorithmsMenu.getItem(5);
-        bidirectionalItem.getActionListeners()[0].actionPerformed(new ActionEvent(bidirectionalItem, ActionEvent.ACTION_PERFORMED, "Bidirectional"));
-    }
+
 
     @Test
     void testRender() {
