@@ -188,4 +188,87 @@ class MainTest {
         mainApp.mouseExited(e);
         mainApp.mouseReleased(e);
     }
+
+    @Test
+    void testSetMazeDirections() throws NoSuchFieldException, IllegalAccessException {
+        // Ensure nodes are created
+        mainApp.createNodes(false);
+        mainApp.setMazeDirections();
+        
+        Field nodeListField = Main.class.getDeclaredField("nodeList");
+        nodeListField.setAccessible(true);
+        Node[][] nodeList = (Node[][]) nodeListField.get(mainApp);
+        
+        // Check a middle node (should have all 4 neighbors)
+        // 5,5 is safe (width 28, height 19)
+        Node middle = nodeList[5][5];
+        java.util.List<Node> neighbors = middle.getNeighbours();
+        assertNotNull(neighbors);
+        // Should have 4 neighbors if not on edge
+        assertEquals(4, neighbors.size());
+        
+        // Check corner node (0,0) - should have 2 neighbors (right, down)
+        Node corner = nodeList[0][0];
+        java.util.List<Node> cornerNeighbors = corner.getNeighbours();
+        assertEquals(2, cornerNeighbors.size());
+    }
+
+    @Test
+    void testMousePressedLogic() throws NoSuchFieldException, IllegalAccessException {
+        // Access private static start and target
+        Field startField = Main.class.getDeclaredField("start");
+        startField.setAccessible(true);
+        Field targetField = Main.class.getDeclaredField("target");
+        targetField.setAccessible(true);
+
+        // Reset start/target
+        startField.set(null, null);
+        targetField.set(null, null);
+
+        // 1. Click out of bounds
+        MouseEvent eOut = new MouseEvent(mainApp, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, -100, -100, 1, false, MouseEvent.BUTTON1);
+        mainApp.mousePressed(eOut);
+        // Should not crash
+        
+        // 2. Click on a node to make it a wall
+        // Node at 15,15 is 0,0
+        MouseEvent eWall = new MouseEvent(mainApp, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, 15, 15, 1, false, MouseEvent.BUTTON1);
+        mainApp.mousePressed(eWall);
+        Node node00 = mainApp.getNodeAt(15, 15);
+        assertTrue(node00.isWall());
+        
+        // 3. Click on wall again to clear it
+        mainApp.mousePressed(eWall);
+        assertFalse(node00.isWall());
+        
+        // 4. Set Start
+        MouseEvent eStart = new MouseEvent(mainApp, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, 15, 15, 1, false, MouseEvent.BUTTON2);
+        mainApp.mousePressed(eStart);
+        assertTrue(node00.isStart());
+        assertEquals(node00, startField.get(null));
+        
+        // 5. Set another Start (should clear previous)
+        // Node at 50,15 is 1,0
+        MouseEvent eStart2 = new MouseEvent(mainApp, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, 50, 15, 1, false, MouseEvent.BUTTON2);
+        mainApp.mousePressed(eStart2);
+        Node node10 = mainApp.getNodeAt(50, 15);
+        assertTrue(node10.isStart());
+        assertFalse(node00.isStart()); // Previous should be cleared
+        assertEquals(node10, startField.get(null));
+        
+        // 6. Set Target
+        MouseEvent eTarget = new MouseEvent(mainApp, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, 85, 15, 1, false, MouseEvent.BUTTON3); // Node 2,0
+        mainApp.mousePressed(eTarget);
+        Node node20 = mainApp.getNodeAt(85, 15);
+        assertTrue(node20.isEnd());
+        assertEquals(node20, targetField.get(null));
+        
+        // 7. Set another Target (should clear previous)
+        MouseEvent eTarget2 = new MouseEvent(mainApp, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), 0, 120, 15, 1, false, MouseEvent.BUTTON3); // Node 3,0
+        mainApp.mousePressed(eTarget2);
+        Node node30 = mainApp.getNodeAt(120, 15);
+        assertTrue(node30.isEnd());
+        assertFalse(node20.isEnd()); // Previous should be cleared
+        assertEquals(node30, targetField.get(null));
+    }
 }
