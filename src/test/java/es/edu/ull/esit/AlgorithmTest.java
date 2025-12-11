@@ -2,6 +2,7 @@ package es.edu.ull.esit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import es.edu.ull.esit.algorithm.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -58,8 +59,8 @@ class AlgorithmTest {
      */
     @Test
     void testDijkstra() {
-        // Assuming a simple path exists
-        algorithm.dijkstra(start, end, WIDTH, HEIGHT);
+        algorithm.setStrategy(new DijkstraAlgorithm());
+        algorithm.performSearch(start, end, WIDTH, HEIGHT);
         // We can't easily assert the path visually, but we can check if end node was processed.
         // This requires modification in Node or Algorithm to track visited status for testing.
         assertTrue(true); // Placeholder
@@ -71,7 +72,8 @@ class AlgorithmTest {
      */
     @Test
     void testAstar() {
-        algorithm.Astar(start, end, WIDTH, HEIGHT);
+        algorithm.setStrategy(new AstarAlgorithm());
+        algorithm.performSearch(start, end, WIDTH, HEIGHT);
         // Basic smoke test - algorithm should complete without throwing exceptions
         assertTrue(true);
     }
@@ -82,7 +84,8 @@ class AlgorithmTest {
      */
     @Test
     void testBfs() {
-        algorithm.bfs(start, end, WIDTH, HEIGHT);
+        algorithm.setStrategy(new BfsAlgorithm());
+        algorithm.performSearch(start, end, WIDTH, HEIGHT);
         assertTrue(true);
     }
     
@@ -92,7 +95,8 @@ class AlgorithmTest {
      */
     @Test
     void testDfs() {
-        algorithm.dfs(start, end, WIDTH, HEIGHT);
+        algorithm.setStrategy(new DfsAlgorithm());
+        algorithm.performSearch(start, end, WIDTH, HEIGHT);
         assertTrue(true);
     }
 
@@ -102,7 +106,8 @@ class AlgorithmTest {
      */
     @Test
     void testGreedyBestFirstSearch() {
-        algorithm.greedyBestFirstSearch(start, end, WIDTH, HEIGHT);
+        algorithm.setStrategy(new GreedyBestFirstAlgorithm());
+        algorithm.performSearch(start, end, WIDTH, HEIGHT);
         assertTrue(true); // Placeholder
     }
 
@@ -112,7 +117,8 @@ class AlgorithmTest {
      */
     @Test
     void testBidirectionalSearch() {
-        algorithm.bidirectionalSearch(start, end, WIDTH, HEIGHT);
+        algorithm.setStrategy(new BidirectionalSearchAlgorithm());
+        algorithm.performSearch(start, end, WIDTH, HEIGHT);
         assertTrue(true); // Placeholder
     }
 }
