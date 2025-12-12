@@ -149,8 +149,7 @@ public class Main extends Canvas implements Runnable, MouseListener {
 		});
 		generateMaze.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mazeGenerator.generate();
-				runTimeMain.repaint();
+				runTimeMain.generateMazeLogic();
 			}
 		});
 		clearSearch.addActionListener(new ActionListener() {
@@ -161,72 +160,36 @@ public class Main extends Canvas implements Runnable, MouseListener {
 
 		bfsItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (runTimeMain.isMazeValid()) {
-					runTimeMain.resetCosts();
-					algorithm.setStrategy(new BfsAlgorithm());
-					algorithm.performSearch(start, target, NODES_WIDTH,
-							NODES_HEIGHT);
-				} else {
-					System.out.println("DIDNT LAUNCH");
-				}
-
+				runTimeMain.runBfs();
 			}
 
 		});
 		dfsItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (runTimeMain.isMazeValid()) {
-					runTimeMain.resetCosts();
-					algorithm.setStrategy(new DfsAlgorithm());
-					algorithm.performSearch(start, target, NODES_WIDTH, NODES_HEIGHT);
-				} else {
-					JOptionPane.showMessageDialog(frame, "You must have a starting and ending point.", "Invalid Maze",
-							JOptionPane.ERROR_MESSAGE);
-				}
-
+				runTimeMain.runDfs();
 			}
 
 		});
 		astarItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (runTimeMain.isMazeValid()) {
-					runTimeMain.resetCosts();
-					algorithm.setStrategy(new AstarAlgorithm());
-					algorithm.performSearch(start, target, NODES_WIDTH,
-							NODES_HEIGHT);
-				} else {
-					System.out.println("DIDNT LAUNCH");
-				}
-
+				runTimeMain.runAstar();
 			}
 
 		});		dijkstraItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (runTimeMain.isMazeValid()) {
-					runTimeMain.resetCosts();
-					algorithm.setStrategy(new DijkstraAlgorithm());
-					algorithm.performSearch(start, target, NODES_WIDTH, NODES_HEIGHT);
-				}
+				runTimeMain.runDijkstra();
 			}
 		});
 
 		greedyBfsItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (runTimeMain.isMazeValid()) {
-					runTimeMain.resetCosts();
-					algorithm.setStrategy(new GreedyBestFirstAlgorithm());
-					algorithm.performSearch(start, target, NODES_WIDTH, NODES_HEIGHT);
-				}
+				runTimeMain.runGreedyBfs();
 			}
 		});
 
 		bidirectionalItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (runTimeMain.isMazeValid()) {
-					runTimeMain.resetCosts();
-					algorithm.setStrategy(new BidirectionalSearchAlgorithm());
-					algorithm.performSearch(start, target, NODES_WIDTH, NODES_HEIGHT);
-				}
+				runTimeMain.runBidirectional();
 			}
 		});
 		searchTime.addActionListener(new ActionListener() {
@@ -601,4 +564,63 @@ public class Main extends Canvas implements Runnable, MouseListener {
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 	}
+
+    public void runBfs() {
+        if (isMazeValid()) {
+            resetCosts();
+            algorithm.setStrategy(new BfsAlgorithm());
+            algorithm.performSearch(start, target, NODES_WIDTH, NODES_HEIGHT);
+        } else {
+            System.out.println("DIDNT LAUNCH");
+        }
+    }
+
+    public void runDfs() {
+        if (isMazeValid()) {
+            resetCosts();
+            algorithm.setStrategy(new DfsAlgorithm());
+            algorithm.performSearch(start, target, NODES_WIDTH, NODES_HEIGHT);
+        } else {
+            JOptionPane.showMessageDialog(frame, "You must have a starting and ending point.", "Invalid Maze", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void runAstar() {
+        if (isMazeValid()) {
+            resetCosts();
+            algorithm.setStrategy(new AstarAlgorithm());
+            algorithm.performSearch(start, target, NODES_WIDTH, NODES_HEIGHT);
+        } else {
+            System.out.println("DIDNT LAUNCH");
+        }
+    }
+
+    public void runDijkstra() {
+        if (isMazeValid()) {
+            resetCosts();
+            algorithm.setStrategy(new DijkstraAlgorithm());
+            algorithm.performSearch(start, target, NODES_WIDTH, NODES_HEIGHT);
+        }
+    }
+
+    public void runGreedyBfs() {
+        if (isMazeValid()) {
+            resetCosts();
+            algorithm.setStrategy(new GreedyBestFirstAlgorithm());
+            algorithm.performSearch(start, target, NODES_WIDTH, NODES_HEIGHT);
+        }
+    }
+
+    public void runBidirectional() {
+        if (isMazeValid()) {
+            resetCosts();
+            algorithm.setStrategy(new BidirectionalSearchAlgorithm());
+            algorithm.performSearch(start, target, NODES_WIDTH, NODES_HEIGHT);
+        }
+    }
+    
+    public void generateMazeLogic() {
+        mazeGenerator.generate();
+        repaint();
+    }
 }

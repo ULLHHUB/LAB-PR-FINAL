@@ -1,5 +1,6 @@
 package es.edu.ull.esit;
 
+import es.edu.ull.esit.algorithm.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -60,5 +61,69 @@ public class MainFileTest {
         assertEquals(Color.GREEN, nodes[0][0].getColor());
         assertEquals(Color.RED, nodes[1][1].getColor());
         assertEquals(Color.BLACK, nodes[2][2].getColor());
+    }
+
+    @Test
+    void testRunAlgorithms() throws NoSuchFieldException, IllegalAccessException {
+        Main mainApp = new Main();
+        
+        // Initialize nodeList
+        Field nodeListField = Main.class.getDeclaredField("nodeList");
+        nodeListField.setAccessible(true);
+        Node[][] nodes = new Node[28][19];
+        for (int i = 0; i < 28; i++) {
+            for (int j = 0; j < 19; j++) {
+                nodes[i][j] = new Node(i, j);
+            }
+        }
+        nodeListField.set(mainApp, nodes);
+        
+        // Initialize static fields
+        Field algorithmField = Main.class.getDeclaredField("algorithm");
+        algorithmField.setAccessible(true);
+        algorithmField.set(null, new Algorithm());
+        
+        Field mazeGenField = Main.class.getDeclaredField("mazeGenerator");
+        mazeGenField.setAccessible(true);
+        mazeGenField.set(null, new MazeGenerator(28, 19, nodes));
+        
+        Field startField = Main.class.getDeclaredField("start");
+        startField.setAccessible(true);
+        startField.set(null, nodes[0][0]);
+        
+        Field targetField = Main.class.getDeclaredField("target");
+        targetField.setAccessible(true);
+        targetField.set(null, nodes[5][5]);
+        
+        // Run methods
+        mainApp.runBfs();
+        assertTrue(getAlgorithmStrategy() instanceof BfsAlgorithm);
+        
+        mainApp.runDfs();
+        assertTrue(getAlgorithmStrategy() instanceof DfsAlgorithm);
+        
+        mainApp.runAstar();
+        assertTrue(getAlgorithmStrategy() instanceof AstarAlgorithm);
+        
+        mainApp.runDijkstra();
+        assertTrue(getAlgorithmStrategy() instanceof DijkstraAlgorithm);
+        
+        mainApp.runGreedyBfs();
+        assertTrue(getAlgorithmStrategy() instanceof GreedyBestFirstAlgorithm);
+        
+        mainApp.runBidirectional();
+        assertTrue(getAlgorithmStrategy() instanceof BidirectionalSearchAlgorithm);
+        
+        mainApp.generateMazeLogic();
+    }
+    
+    private Object getAlgorithmStrategy() throws NoSuchFieldException, IllegalAccessException {
+        Field algorithmField = Main.class.getDeclaredField("algorithm");
+        algorithmField.setAccessible(true);
+        Object algo = algorithmField.get(null);
+        
+        Field strategyField = Algorithm.class.getDeclaredField("strategy");
+        strategyField.setAccessible(true);
+        return strategyField.get(algo);
     }
 }
