@@ -78,3 +78,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 60
           update-comment: true
+
+      # --- NUEVO: subir reportes OWASP Dependency-Check como artifact ---
+      - name: Upload OWASP Dependency-Check reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: |
+            target/dependency-check-report.*
+            target/site/dependency-check/**
+            target/site/dependency-check-report.*
